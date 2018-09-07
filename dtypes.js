@@ -2,7 +2,7 @@
 int, float, string, char, boolean, date,
 */
 
-var int = {
+exports.int = {
   checkType : function(value){
     return (typeof value == "number") && (parseInt(value) == value);
   },
@@ -11,7 +11,7 @@ var int = {
   }
 }
 
-var float = {
+exports.float = {
   checkType : function(value){
     return (typeof value == "number");
   },
@@ -20,7 +20,7 @@ var float = {
   }
 }
 
-var string = {
+exports.string = {
   checkType : function(value){
     return (typeof value == "string");
   },
@@ -29,7 +29,7 @@ var string = {
   }
 }
 
-var char = {
+exports.char = {
   checkType : function(value){
     return (typeof value == "string") && value.length == 1;
   },
@@ -38,7 +38,7 @@ var char = {
   }
 }
 
-var boolean = {
+exports.boolean = {
   checkType : function(value){
     console.log(typeof value);
     return (typeof value == "boolean");
@@ -47,5 +47,14 @@ var boolean = {
     if(strValue == "true") return true;
     else if(strValue == "false") return false;
     else return null;
+  }
+}
+
+exports.datetime = {
+  checkType : function(value){
+    return value instanceof Date;
+  },
+  parse : function(strValue){
+    return Date.parse(strValue);
   }
 }

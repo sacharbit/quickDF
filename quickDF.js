@@ -1,21 +1,40 @@
 var import_csv = require("./importCSV");
 var utils = require("./utils");
 var dt = require("./dtypes");
+console.log(dt);
+
+// functions done :
+// length,
+// setDTypes,
+// shape,
+// getLine,
+// map,
+// filter,
+// addCol,
+// drop,
+// select,
+// head
+
+
+// functions todo :
 // this.load
 // this.groupby
 // this.setLine
-// this.head
-
-// this.deleteColumn
+// this.sort_values
+// this.toString or this.show
+// this.to_html
+// this.to_markdown
 
 Array.prototype.dtype = "";
+Array.prototype.setDType = function(typeStr){
+  console.log(typeStr)
+  return this.map(dt[typeStr].parse);
+}
 
-
-var DataFrame = function(dict = {}, cols = null, dtypes = null, orient="columns"){
+var DataFrame = function(dict = {}, orient="columns", cols = null, dtypes = null){
   this.columns = [];
 
   var maxLength = 0;
-
   switch(orient){
     case "columns" :
     for(i in dict) maxLength = Math.max(maxLength, dict[i].length);
@@ -46,11 +65,39 @@ var DataFrame = function(dict = {}, cols = null, dtypes = null, orient="columns"
 
 }
 
+DataFrame.prototype.to_html = function(){
+  var table = "<table><thead><th>" + this.columns.join("</th><th>") + "</th></thead><tbody>";
+  var footers = "</tbody></table>";
+  for(var i=0; i<this.length(); i++){
+    console.log("thissss");
+    var str = "<tr>";
+    for(var j=0; j<this.columns.length; j++){
+      if(this.columns[i].hasOwnProperty()){
+        var col = this.columns[j];
+        str+= "<td>"+this[col][i]+"</td>";
+      }
+    }
+    str+="</tr>";
+    table+=str;
+  }
+  table+=footers;
+  return table;
+}
+
 /* @return : length of dataframe */
 DataFrame.prototype.length = function(){
   for(i in this){
     if(this[i].hasOwnProperty()) return this[i].length;
   }
+}
+
+DataFrame.prototype.setDTypes = function(cols = [], dtypes = []){
+  if(cols.length != dtypes.length) throw new Error("dtypes and cols are not the same length");
+  for(var i=0; i<cols.length; i++){
+    var col = cols[i];
+    this[col] = this[col].setDType(dtypes[i]);
+  }
+  return this;
 }
 
 /* @return : shape of dataframe */
@@ -124,6 +171,11 @@ DataFrame.prototype.addCol = function(nameCol, col = []){
   return this;
 }
 
+DataFrame.prototype.drop = function(nameCol){
+  delete this[nameCol];
+  return this;
+}
+
 /*
   @param cols : array of column names
   @return : new dataframe with only those columns
@@ -154,7 +206,7 @@ DataFrame.prototype.head = function(numLines = 5){
 */
 var importCSV = function(filename, callback){
   import_csv(filename, function(data){
-    callback(new DataFrame(data, orient="records"));
+    callback(new DataFrame(data));
   });
 }
 
